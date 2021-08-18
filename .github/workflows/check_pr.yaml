@@ -15,10 +15,12 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
         with:
