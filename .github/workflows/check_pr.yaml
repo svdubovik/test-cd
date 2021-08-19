@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
+
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
@@ -17,12 +18,18 @@ jobs:
           DEFAULT_BRANCH: main
           FILTER_REGEX_EXCLUDE: .*_test.go
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: SonarCloud Scan
         continue-on-error: true
         uses: sonarsource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.organization=svdubovik
+            -Dsonar.projectKey=svdubovik_test-cd
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Initialize CodeQL
         continue-on-error: true
         uses: github/codeql-action/init@v1
@@ -31,22 +38,29 @@ jobs:
       - name: Perform CodeQL Analysis
         continue-on-error: true
         uses: github/codeql-action/analyze@v1
+
       - name: Run Snyk to check for vulnerabilities
         continue-on-error: true
         uses: snyk/actions/golang@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
       - name: Unit tests
         continue-on-error: true
-        run: go test -v ./...
+        run: |
+          go test -race -coverprofile=coverage.txt -covermode=atomic
+
       - continue-on-error: true
         uses: codecov/codecov-action@v2
         with:
+          files: ./coverage.txt
           token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Build image for scanning
         uses: docker/build-push-action@v2
         with:
           tags: hello:latest
+
       - name: Run Snyk to check Docker image for vulnerabilities
         uses: snyk/actions/docker@master
         env:
