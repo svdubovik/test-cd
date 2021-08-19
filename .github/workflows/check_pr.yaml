@@ -46,7 +46,6 @@ jobs:
       - name: Build image for scanning
         uses: docker/build-push-action@v2
         with:
-          context: .
           tags: hello:latest
       - name: Run Snyk to check Docker image for vulnerabilities
         uses: snyk/actions/docker@master
