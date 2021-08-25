@@ -63,15 +63,18 @@ jobs:
       - name: Unit tests
         run: |
           go test -race -coverprofile=coverage.txt -covermode=atomic
+          go test -coverprofile=coverage.out
+          go test -json  > report.json
       - uses: codecov/codecov-action@v2
         with:
-          files: ./coverage.txt
+          files: ./coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
       - uses: actions/upload-artifact@v2
         with:
-          name: coverage
-          path: ./coverage.txt
-
+          name: tests
+          path: |
+            ./coverage.out
+            ./report.json
   sonar:
     name: Run SonarQube checks
     runs-on: ubuntu-latest
@@ -82,14 +85,15 @@ jobs:
           fetch-depth: 0
       - uses: actions/download-artifact@v2
         with:
-          name: coverage
+          name: tests
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         with:
           args: >
             -Dsonar.organization=svdubovik
             -Dsonar.projectKey=svdubovik_test-cd
-            -Dsonar.go.coverage.reportPaths=coverage.txt
+            -Dsonar.go.coverage.reportPaths=coverage.out
+            -Dsonar.go.tests.reportPaths=report.json
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
