@@ -20,16 +20,25 @@ jobs:
           FILTER_REGEX_EXCLUDE: .*_test.go
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  golangci-lint:
+    name: Run Reviewdog golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: golangci-lint
+      uses: reviewdog/action-golangci-lint@v2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
   detect-secrets:
-    name: Run Reviewdog detect secrets
+    name: Run Reviewdog detect-secrets
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: detect-secrets
       uses: reviewdog/action-detect-secrets@master
       with:
-        github_token: ${{ secrets.github_token }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         fail_on_error: true
         level: error
 
