@@ -1,5 +1,6 @@
 # TODO slack notification
 # TODO fix codeQL
+# TODO reporting about Unit Test
 name: Check Pull Request
 on:
   pull_request:
@@ -61,10 +62,16 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
       - name: Unit tests
+        continue-on-error: true
         run: |
-          go test -race -coverprofile=coverage.txt -covermode=atomic
+          go get -u github.com/jstemmer/go-junit-report
           go test -coverprofile=coverage.out
-          go test -json  > report.json
+          # go test -json  > report.json
+          go test -v 2>&1 | go-junit-report > report.xml
+      - name: Publish Unit test results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        with:
+          files: report.xml
       - uses: codecov/codecov-action@v2
         with:
           files: ./coverage.out
@@ -74,7 +81,7 @@ jobs:
           name: tests
           path: |
             ./coverage.out
-            ./report.json
+            ./report.xml
   sonar:
     name: Run SonarQube checks
     runs-on: ubuntu-latest
@@ -93,7 +100,7 @@ jobs:
             -Dsonar.organization=svdubovik
             -Dsonar.projectKey=svdubovik_test-cd
             -Dsonar.go.coverage.reportPaths=coverage.out
-            -Dsonar.go.tests.reportPaths=report.json
+            -Dsonar.go.tests.reportPaths=report.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
