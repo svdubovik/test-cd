@@ -16,7 +16,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func buildSql(email string) string {
-	return fmt.Sprintf("SELECT * FROM users WHERE email='%s';", email)
+	return fmt.Sprintf("SELECT * FROM users WHERE email='%s' AND Password='123456';", email)
 }
 
 func main() {
