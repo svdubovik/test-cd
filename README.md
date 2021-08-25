@@ -15,3 +15,6 @@ This is a test!
 password=ex@mplepassword
 password=******
 More test...
+
+aws_access_key_id = AKIAVLUYW7FI7DQC34BG
+aws_secret_access_key = UjAKIQWvw/I8K1yFqgnCZkOMV2S6BXlinb+fcqC
