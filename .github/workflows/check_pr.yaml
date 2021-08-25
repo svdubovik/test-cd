@@ -54,7 +54,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-  unit: # TODO publish results
+  unit: # TODO publish results?
     name: Run unit tests
     runs-on: ubuntu-latest
     steps:
@@ -97,7 +97,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # TODO добавить covarage
 
   snyk_docker:
     name: Run Snyk docker image check
