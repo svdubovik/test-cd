@@ -29,6 +29,8 @@ jobs:
       uses: reviewdog/action-golangci-lint@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        fail_on_error: true
+        level: error
 
   detect-secrets:
     name: Run Reviewdog detect-secrets
