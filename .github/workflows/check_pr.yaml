@@ -1,0 +1,121 @@
+# TODO fix codeQL
+# TODO reporting about Unit Test
+name: Check Pull Request
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  linster:
+    name: Run linters
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Lint Code Base
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: main
+          FILTER_REGEX_EXCLUDE: .*_test.go
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  detect-secrets:
+    name: Run Reviewdog detect-secrets
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: detect-secrets
+      uses: reviewdog/action-detect-secrets@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  codeql:
+    name: Run codeQL checks
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: github/codeql-action/init@v1
+        with:
+          languages: go
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+  snyk_code:
+    name: Run Snyk code checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/golang@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  unit: # TODO publish results?
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - name: Unit tests
+        continue-on-error: true
+        run: |
+          go get -u github.com/jstemmer/go-junit-report
+          go test -coverprofile=coverage.out
+          # go test -json  > report.json
+          go test -v 2>&1 | go-junit-report > report.xml
+      - name: Publish Unit test results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        with:
+          files: report.xml
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage.out
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: tests
+          path: |
+            ./coverage.out
+            ./report.xml
+  sonar:
+    name: Run SonarQube checks
+    runs-on: ubuntu-latest
+    needs: unit
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v2
+        with:
+          name: tests
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.organization=svdubovik
+            -Dsonar.projectKey=svdubovik_test-cd
+            -Dsonar.go.coverage.reportPaths=coverage.out
+            -Dsonar.go.tests.reportPaths=report.xml
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  snyk_docker:
+    name: Run Snyk docker image check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image for scanning
+        uses: docker/build-push-action@v2
+        with:
+          tags: ${{ github.repository }}:pr-${{ github.event.pull_request.number }}
+      - name: Run Snyk to check Docker image for vulnerabilities
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: ${{ github.repository }}:pr-${{ github.event.pull_request.number }}
