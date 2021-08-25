@@ -78,6 +78,8 @@ jobs:
     needs: unit
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/download-artifact@v2
         with:
           name: coverage
@@ -87,6 +89,7 @@ jobs:
           args: >
             -Dsonar.organization=svdubovik
             -Dsonar.projectKey=svdubovik_test-cd
+            -Dsonar.python.coverage.reportPaths=coverage.txt
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
