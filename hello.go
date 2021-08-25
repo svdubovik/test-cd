@@ -26,6 +26,10 @@ func main() {
 	fmt.Println(cred)
 	fmt.Println(secret)
 
+	if false {
+		fmt.Println("false")
+	}
+
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
