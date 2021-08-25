@@ -30,18 +30,15 @@ jobs:
       - name: gitleaks-action
         uses: zricethezav/gitleaks-action@master
 
-  secret-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: max/secret-scan@master
-
   detect-secrets:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: detect-secrets
       uses: reviewdog/action-detect-secrets@master
+      with:
+        github_token: ${{ secrets.github_token }}
+        reporter: github-pr-review
 
   codeql:
     name: Run codeQL checks
