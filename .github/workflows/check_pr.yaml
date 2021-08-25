@@ -22,6 +22,7 @@ jobs:
 
 
   detect-secrets:
+    name: Run Reviewdog detect secrets
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -29,6 +30,8 @@ jobs:
       uses: reviewdog/action-detect-secrets@master
       with:
         github_token: ${{ secrets.github_token }}
+        fail_on_error: true
+        level: error
 
   codeql:
     name: Run codeQL checks
