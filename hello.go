@@ -22,7 +22,9 @@ func buildSQL(email string) string {
 func main() {
 	buildSQL("test@test.com")
 	cred := "KjasdlkjapoIKLlka98098sdf012U/rL2sLdBqOHQUlt5Z6kCgKGDyCFA=="
+	secret := "12345"
 	fmt.Println(cred)
+	fmt.Println(secret)
 
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))

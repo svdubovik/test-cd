@@ -7,6 +7,11 @@ This repository is used to test continuous deployment.
 aws_access_key_id = AKIAVLUYW7FI7DQC34BG
 aws_secret_access_key = UjAKIQWvw/I8K1yFqgnCZkOMV2S6BXlinb+fcqC
 
-password = "test"
+password="test1"
 
 credentials = "123"
+
+This is a test!
+password=ex@mplepassword
+password=******
+More test...
