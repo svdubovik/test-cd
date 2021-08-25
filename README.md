@@ -4,4 +4,9 @@
 
 This repository is used to test continuous deployment.
 
-aws_secret='ABCDEF+c2L7yXeGvUyrPgYsDnWRRC1AYEXAMPLE'
+aws_access_key_id = AKIAVLUYW7FI7DQC34BG
+aws_secret_access_key = UjAKIQWvw/I8K1yFqgnCZkOMV2S6BXlinb+fcqC
+
+password = "test"
+
+credentials = "123"
