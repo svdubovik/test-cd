@@ -21,6 +21,8 @@ func buildSql(email string) string {
 
 func main() {
 	buildSql("test@test.com")
+	cred := "KjasdlkjapoIKLlka98098sdf012U/rL2sLdBqOHQUlt5Z6kCgKGDyCFA=="
+	fmt.Println(cred)
 
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
