@@ -29,16 +29,6 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-  gosec:
-    runs-on: ubuntu-latest
-    env:
-      GO111MODULE: on
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v2
-      - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
-
   codeql:
     name: Run codeQL checks
     runs-on: ubuntu-latest
